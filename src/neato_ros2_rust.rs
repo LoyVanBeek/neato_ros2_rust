@@ -13,9 +13,6 @@ fn main() -> rclrs::RclResult {
     let scan_publisher =
         node.create_publisher::<sensor_msgs::msg::LaserScan>("scan", rclrs::QOS_PROFILE_DEFAULT)?;
 
-    let int8_array_publisher =
-        node.create_publisher::<std_msgs::msg::Int8MultiArray>("multiarray", rclrs::QOS_PROFILE_DEFAULT)?;
-
     let s = SerialPortSettings {
         baud_rate: 115200,
         timeout: std::time::Duration::from_secs(1),
@@ -40,26 +37,13 @@ fn main() -> rclrs::RclResult {
         .expect("Failed to enable LDS rotation");
 
 
-    let mut publish_count: u32 = 1;
-    let mut ints = vec![];
-    let mut array = std_msgs::msg::Int8MultiArray{
-        data: vec![1, 2, 3],
-        ..Default::default()
-    };
-
     while context.ok() {
-        array.data.push(publish_count as i8);
-        int8_array_publisher.publish(&array)?;
-
-
         robot.request_scan().expect("Failed to request a scan");
-        ints.push(publish_count as f32);
-
         match robot.get_scan_ranges() {
             Ok(scanned_ranges) => {
                 println!("Got ranges: {:?}", scanned_ranges);
                 let message = sensor_msgs::msg::LaserScan {
-                    angle_min: publish_count as f32,
+                    angle_min: 0.0,
                     angle_max: 6.28,  //2pi
                     angle_increment: 0.01745329252, //2pi rad / 360 points
                     time_increment: 0.0005414771496642842, // = 1 / (5.13 RPM * 360 points)
@@ -67,19 +51,14 @@ fn main() -> rclrs::RclResult {
                     range_min: 0.0,
                     range_max: 10.0, // Guess
                     ranges: scanned_ranges,
-                    intensities: vec![publish_count as f32],
                     ..Default::default()
                 };
-                println!("Publishing...");
                 scan_publisher.publish(&message)?;
             }
             Err(err) => {
                 eprintln!("Could not get_scan_ranges: {:?}", err);
-                // robot.exit().expect("Failed to exit robot while handling err");
             }
         }
-
-        publish_count += 1;
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
     println!("Exiting...");
