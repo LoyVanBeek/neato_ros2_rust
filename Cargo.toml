@@ -1,0 +1,13 @@
+[package]
+name = "neato_ros2_rust"
+version = "0.0.1"
+authors = ["Loy van Beek <loy.vanbeek@gmail.com>"]
+edition = "2018"
+
+[[bin]]
+name = "neato_ros2_rust"
+path = "src/neato_ros2_rust.rs"
+
+[dependencies]
+neato_driver = { git = "https://github.com/LoyVanBeek/neato_rust.git" }
+serialport = { version = "3.3.0", optional = false }  # udev is causing issues with CI and happens to be optional
