@@ -33,9 +33,16 @@ RUN apt update -qq && apt install -y --no-install-recommends \
       tmux \
     && rm -rf /var/lib/apt/lists/*
 
+
+# install_ros_tools
+RUN apt update -qq && apt install -y --no-install-recommends \
+      libudev-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN mkdir /workspace/src
 RUN mkdir /workspace/src/ros2_rust
 COPY . /workspace/src/neato_ros2_rust
+RUN rm /workspace/src/neato_ros2_rust/Cargo.lock  # Somehow my laptop keeps generating such a file via RustRover that causes the build to fail
 
 RUN wget -O /workspace/src/ros2_rust/ros2_rust_${ROS_DISTRO}.repos https://raw.githubusercontent.com/ros2-rust/ros2_rust/d16172a97a13c6d4bef5912b2b99b2eb526a1915/ros2_rust_${ROS_DISTRO}.repos
 RUN vcs import src < src/ros2_rust/ros2_rust_${ROS_DISTRO}.repos
