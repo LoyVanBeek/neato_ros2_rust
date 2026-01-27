@@ -82,6 +82,8 @@ RUN rm /workspace/src/neato_ros2_rust/Cargo.lock  # Somehow my laptop keeps gene
 WORKDIR /workspace/src/neato_ros2_rust
 RUN bash /opt/ros/${ROS_DISTRO}/setup.sh
 WORKDIR /workspace
-# RUN colcon build
+#RUN colcon build
+#RUN bash /workspace/build/local_setup.sh
+
 
 #ENTRYPOINT ["/bin/bash"]
