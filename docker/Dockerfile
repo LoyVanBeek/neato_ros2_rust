@@ -72,6 +72,11 @@ RUN git clone -b $ROS_DISTRO https://github.com/ros2/unique_identifier_msgs.git 
 RUN git clone https://github.com/ros2-rust/rosidl_rust.git src/rosidl_rust
 RUN git clone https://github.com/ros2-rust/examples.git src/examples
 
+#RUN bash -c "source /root/.bashrc"
+#RUN bash /opt/ros/${ROS_DISTRO}/setup.sh
+#WORKDIR /workspace
+#RUN colcon build
+
 RUN mkdir /workspace/src/ros2_rust
 COPY . /workspace/src/neato_ros2_rust
 RUN rm /workspace/src/neato_ros2_rust/Cargo.lock  # Somehow my laptop keeps generating such a file via RustRover that causes the build to fail
