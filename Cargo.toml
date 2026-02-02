@@ -14,3 +14,4 @@ neato_driver = { git = "https://github.com/LoyVanBeek/neato_rust.git" }
 serialport = { version = "3.3.0", optional = false }  # udev is causing issues with CI and happens to be optional
 std_msgs = "*"
 sensor_msgs = "*"
+anyhow = {version = "1", features = ["backtrace"]}

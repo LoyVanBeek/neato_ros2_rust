@@ -53,6 +53,7 @@ RUN apt update -qq && apt install -y --no-install-recommends \
     ros-$ROS_DISTRO-example-interfaces \
     ros-$ROS_DISTRO-test-msgs \
     ros-$ROS_DISTRO-test-interface-files \
+    ros-$ROS_DISTRO-ament-cmake \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies for neato_rust: libudev-dev
@@ -72,10 +73,12 @@ RUN git clone -b $ROS_DISTRO https://github.com/ros2/unique_identifier_msgs.git 
 RUN git clone https://github.com/ros2-rust/rosidl_rust.git src/rosidl_rust
 RUN git clone https://github.com/ros2-rust/examples.git src/examples
 
-#RUN bash -c "source /root/.bashrc"
-#RUN bash /opt/ros/${ROS_DISTRO}/setup.sh
-#WORKDIR /workspace
+WORKDIR /workspace
+ENV PATH="$PATH:/root/.cargo/bin/"
+RUN bash /opt/ros/${ROS_DISTRO}/setup.sh
+RUN bash -c "source /root/.bashrc"
 #RUN colcon build
+
 
 RUN mkdir /workspace/src/ros2_rust
 COPY . /workspace/src/neato_ros2_rust

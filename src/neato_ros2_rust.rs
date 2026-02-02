@@ -1,36 +1,38 @@
-use std::sync::Arc;
-use rclrs;
+use anyhow::{Error, Result};
+use rclrs::*;
 use std_msgs;
-use sensor_msgs;
 use sensor_msgs::msg::LaserScan as LaserScanMsg;
 
 use neato_driver::{DSeries, NeatoRobot, Toggle};
 use serialport::SerialPortSettings;
+//
+// struct NeatoNode {
+//     node: Arc<rclrs::Node>,
+//     // _scan_publisher: Arc<rclrs::Publisher<LaserScanMsg>>,
+//     latest_scan: Option<LaserScanMsg>,
+// }
+//
+// impl NeatoNode {
+//     fn new(context: &rclrs::Context) -> Result<Self, rclrs::RclrsError> {
+//         let node = rclrs::Node::new(context, "neato")?;
+//         let latest_scan = None;
+//         // let _scan_publisher = node.cr
+//         Ok(Self {
+//             node,
+//             latest_scan,
+//         })
+//     }
+// }
 
-struct NeatoNode {
-    node: Arc<rclrs::Node>,
-    // _scan_publisher: Arc<rclrs::Publisher<LaserScanMsg>>,
-    latest_scan: Option<LaserScanMsg>,
-}
+fn main() {
+    let context = Context::default_from_env().unwrap();
+    let mut executor = context.create_basic_executor();
+    let node = executor.create_node("neato").unwrap();
 
-impl NeatoNode {
-    fn new(context: &rclrs::Context) -> Result<Self, rclrs::RclrsError> {
-        let node = rclrs::Node::new(context, "neato")?;
-        let latest_scan = None;
-        // let _scan_publisher = node.cr
-        Ok(Self {
-            node,
-            latest_scan,
-        })
-    }
-}
+    executor.spin(SpinOptions::default()).first_error().unwrap();
+    // let neato = NeatoNode::new(&context)?;
 
-fn main() -> rclrs::RclResult {
-    let context = rclrs::Context::new(std::env::args())?;
-
-    let neato = NeatoNode::new(&context)?;
-
-    rclrs::spin(neato.node);
+    // rclrs::spin(neato.node);
     //
     // let scan_publisher =
     //     node.create_publisher::<sensor_msgs::msg::LaserScan>("scan", rclrs::QOS_PROFILE_DEFAULT)?;
