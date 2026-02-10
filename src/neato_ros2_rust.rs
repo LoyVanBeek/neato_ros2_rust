@@ -24,11 +24,13 @@ use serialport::SerialPortSettings;
 // }
 
 fn main() -> Result<(), Error> {
+    println!("Starting neato_ros2_rust");
     let context = Context::default_from_env()?;
+    println!("Created context: {:?}", context);
     let mut executor = context.create_basic_executor();
+    println!("Created executor: {:?}", executor);
     let node = executor.create_node("neato")?;
-
-    executor.spin(SpinOptions::default()).first_error()?;
+    println!("Created node: {:?}", node);
 
     let scan_publisher = node.create_publisher::<LaserScanMsg>("scan")?;
 
@@ -55,7 +57,6 @@ fn main() -> Result<(), Error> {
         .set_ldsrotation(Toggle::On)
         .expect("Failed to enable LDS rotation");
 
-
     while context.ok() {
         robot.request_scan().expect("Failed to request a scan");
         match robot.get_scan_ranges() {
@@ -80,6 +81,8 @@ fn main() -> Result<(), Error> {
         }
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
+
+    executor.spin(SpinOptions::default()).first_error()?;
     println!("Exiting...");
 
     robot.exit().expect("Failed to exit robot");
