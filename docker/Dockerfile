@@ -77,21 +77,26 @@ WORKDIR /workspace
 ENV PATH="$PATH:/root/.cargo/bin/"
 RUN bash /opt/ros/${ROS_DISTRO}/setup.sh
 RUN bash -c "source /root/.bashrc"
+#TODO: colcon build fails when ran inside this Docker build somehow, complaining about:
+#
+#   1.351 --- stderr: rosidl_generator_rs
+#   1.351 CMake Error at CMakeLists.txt:5 (find_package):
+#   1.351   By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project
+#   1.351   has asked CMake to find a package configuration file provided by
+#   1.351   "ament_cmake", but CMake did not find one.
+RUN echo
 #RUN colcon build
-
-
-RUN mkdir /workspace/src/ros2_rust
-COPY . /workspace/src/neato_ros2_rust
-RUN rm /workspace/src/neato_ros2_rust/Cargo.lock  # Somehow my laptop keeps generating such a file via RustRover that causes the build to fail
 
 #RUN wget -O /workspace/src/ros2_rust/ros2_rust_${ROS_DISTRO}.repos https://raw.githubusercontent.com/ros2-rust/ros2_rust/d16172a97a13c6d4bef5912b2b99b2eb526a1915/ros2_rust_${ROS_DISTRO}.repos
 #RUN vcs import src < src/ros2_rust/ros2_rust_${ROS_DISTRO}.repos
 
-WORKDIR /workspace/src/neato_ros2_rust
-RUN bash /opt/ros/${ROS_DISTRO}/setup.sh
+RUN bash -c "source /opt/ros/${ROS_DISTRO}/local_setup.sh"
 WORKDIR /workspace
 #RUN colcon build
-#RUN bash /workspace/build/local_setup.sh
+#RUN bash -c "source /workspace/build/local_setup.sh"
 
+RUN mkdir /workspace/src/ros2_rust
+COPY . /workspace/src/neato_ros2_rust
+RUN rm /workspace/src/neato_ros2_rust/Cargo.lock  # Somehow my laptop keeps generating such a file via RustRover that causes the build to fail
 
 #ENTRYPOINT ["/bin/bash"]
