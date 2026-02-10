@@ -2,7 +2,7 @@
 name = "neato_ros2_rust"
 version = "0.0.1"
 authors = ["Loy van Beek <loy.vanbeek@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 [[bin]]
 name = "neato_ros2_rust"
