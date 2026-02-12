@@ -61,7 +61,7 @@ fn main() -> Result<(), Error> {
         robot.request_scan().expect("Failed to request a scan");
         match robot.get_scan_ranges() {
             Ok(scanned_ranges) => {
-                println!("Got ranges: {:?}", scanned_ranges);
+                // println!("Got ranges: {:?}", scanned_ranges);
                 let message = sensor_msgs::msg::LaserScan {
                     angle_min: 0.0,
                     angle_max: 6.28,  //2pi
@@ -79,7 +79,7 @@ fn main() -> Result<(), Error> {
                 eprintln!("Could not get_scan_ranges: {:?}", err);
             }
         }
-        std::thread::sleep(std::time::Duration::from_millis(500));
+        // std::thread::sleep(std::time::Duration::from_millis(500));
     }
 
     executor.spin(SpinOptions::default()).first_error()?;
