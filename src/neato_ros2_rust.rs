@@ -28,7 +28,7 @@ fn main() -> Result<(), Error> {
     let context = Context::default_from_env()?;
     println!("Created context: {:?}", context);
     let mut executor = context.create_basic_executor();
-    println!("Created executor: {:?}", executor);
+    println!("Created executor");
     let node = executor.create_node("neato")?;
     println!("Created node: {:?}", node);
 
