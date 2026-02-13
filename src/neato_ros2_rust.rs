@@ -1,17 +1,38 @@
-use rclrs;
-use std_msgs;
-use sensor_msgs;
+use anyhow::{Error, Result};
+use rclrs::*;
+use sensor_msgs::msg::LaserScan as LaserScanMsg;
 
 use neato_driver::{DSeries, NeatoRobot, Toggle};
 use serialport::SerialPortSettings;
+//
+// struct NeatoNode {
+//     node: Arc<rclrs::Node>,
+//     // _scan_publisher: Arc<rclrs::Publisher<LaserScanMsg>>,
+//     latest_scan: Option<LaserScanMsg>,
+// }
+//
+// impl NeatoNode {
+//     fn new(context: &rclrs::Context) -> Result<Self, rclrs::RclrsError> {
+//         let node = rclrs::Node::new(context, "neato")?;
+//         let latest_scan = None;
+//         // let _scan_publisher = node.cr
+//         Ok(Self {
+//             node,
+//             latest_scan,
+//         })
+//     }
+// }
 
-fn main() -> rclrs::RclResult {
-    let context = rclrs::Context::default();
+fn main() -> Result<(), Error> {
+    println!("Starting neato_ros2_rust");
+    let context = Context::default_from_env()?;
+    println!("Created context: {:?}", context);
+    let mut executor = context.create_basic_executor();
+    println!("Created executor");
+    let node = executor.create_node("neato")?;
+    println!("Created node: {:?}", node);
 
-    let node = context.create_node("neato")?;
-
-    let scan_publisher =
-        node.create_publisher::<sensor_msgs::msg::LaserScan>("scan", rclrs::QOS_PROFILE_DEFAULT)?;
+    let scan_publisher = node.create_publisher::<LaserScanMsg>("scan")?;
 
     let s = SerialPortSettings {
         baud_rate: 115200,
@@ -31,17 +52,16 @@ fn main() -> rclrs::RclResult {
     robot
         .set_testmode(Toggle::On)
         .expect("Failed to enable testmode");
-    
+
     robot
         .set_ldsrotation(Toggle::On)
         .expect("Failed to enable LDS rotation");
-
 
     while context.ok() {
         robot.request_scan().expect("Failed to request a scan");
         match robot.get_scan_ranges() {
             Ok(scanned_ranges) => {
-                println!("Got ranges: {:?}", scanned_ranges);
+                // println!("Got ranges: {:?}", scanned_ranges);
                 let message = sensor_msgs::msg::LaserScan {
                     angle_min: 0.0,
                     angle_max: 6.28,  //2pi
@@ -59,8 +79,10 @@ fn main() -> rclrs::RclResult {
                 eprintln!("Could not get_scan_ranges: {:?}", err);
             }
         }
-        std::thread::sleep(std::time::Duration::from_millis(500));
+        // std::thread::sleep(std::time::Duration::from_millis(500));
     }
+
+    executor.spin(SpinOptions::default()).first_error()?;
     println!("Exiting...");
 
     robot.exit().expect("Failed to exit robot");
